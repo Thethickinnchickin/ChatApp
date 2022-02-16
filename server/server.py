@@ -48,7 +48,7 @@ def client_communication(chat_user):
     while run:
         try:
             message = client.recv(BUFSIZ)
-            if message == bytes("{quite}", "utf8"):
+            if message == bytes("{quit}", "utf8"):
                 client.close()
                 chat_users.remove(chat_user)
                 broadcast(bytes(f"{name} has left the chat...", "utf8"), "")
@@ -56,8 +56,10 @@ def client_communication(chat_user):
                 break
             else:
                 broadcast(message, name+": ")
+                print(f"{name}: ", message.decode("utf8"))
         except Exception as e:
             print(f"[Exception]", e)
+            run = False
             break
 
 
@@ -70,8 +72,8 @@ def wait_for_connection():
     run = True
     while run:
         try:
-            client, address = SERVER.accept()
-            chat_user = ChatUser(address, client)
+            client, address = SERVER.accept() # wait for any new connections
+            chat_user = ChatUser(address, client) # create new chat user for connection
             chat_users.append(chat_user)
             print(f"[Connection] {address} connected to sever at {time.time()}")
             Thread(target=client_communication, args=(chat_user,)).start()
@@ -81,7 +83,7 @@ def wait_for_connection():
 
 
 if __name__ == "__main__":
-    SERVER.listen(MAX_CONNECTIONS)  # listening for connection
+    SERVER.listen(MAX_CONNECTIONS)  # open server to listening for connection
     print("[Started] Waiting for server connection")
     ACCEPT_THREAD = Thread(target=wait_for_connection)
     ACCEPT_THREAD.start()

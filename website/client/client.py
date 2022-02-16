@@ -1,6 +1,8 @@
+import threading
 from socket import AF_INET, socket, SOCK_STREAM
 from threading import Thread
 import time
+
 
 class Client:
     """
@@ -12,7 +14,6 @@ class Client:
     ADDR = (HOST, PORT)
     BUFSIZ = 512
 
-
     def __init__(self, name):
         """
         Init object and send name to server
@@ -20,12 +21,13 @@ class Client:
 
 
         """
-        self.client_socket = self.socket(AF_INET, SOCK_STREAM)
+        self.client_socket = socket(AF_INET, SOCK_STREAM)
         self.client_socket.connect(self.ADDR)
-        receive_thread = Thread(target=self.receive_messages)
-        receive_thread.start()
         self.messages = []
         self.send_message(name)
+        self.lock = threading.Lock()
+        receive_thread = Thread(target=self.receive_messages)
+        receive_thread.start()
 
     def receive_messages(self):
         """
@@ -35,8 +37,9 @@ class Client:
         while True:
             try:
                 msg = self.client_socket.recv(self.BUFSIZ).decode()
+                self.lock.acquire()
                 self.messages.append(msg)
-                print(msg)
+                self.lock.release()
             except Exception as e:
                 print("[Exception]", e)
                 break
@@ -51,4 +54,20 @@ class Client:
         if msg == "{quit}":
             self.client_socket.close()
 
+    def get_messages(self):
+        """
+        :returns a list of str messages
+        :return: list[str]
+        """
+        # make sure memory is safe to access
 
+        messages_copy = self.messages[:]
+
+        # make memory safe to read
+        self.lock.acquire()
+        self.messages = []
+        self.lock.release()
+        return messages_copy
+
+    def disconnect(self):
+        self.send_message("{quit}")
