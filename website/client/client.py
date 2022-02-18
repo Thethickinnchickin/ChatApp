@@ -10,7 +10,7 @@ class Client:
     """
     # Global constants
     HOST = "localhost"
-    PORT = 3000
+    PORT = 4000
     ADDR = (HOST, PORT)
     BUFSIZ = 512
 

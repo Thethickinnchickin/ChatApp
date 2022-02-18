@@ -5,7 +5,7 @@ from chatuser import ChatUser
 
 # Global constants
 HOST = 'localhost'
-PORT = 3000
+PORT = 4000
 ADDR = (HOST, PORT)
 MAX_CONNECTIONS = 10
 BUFSIZ = 1024
@@ -44,23 +44,19 @@ def client_communication(chat_user):
 
     msg = bytes(f"{name} has joined the chat", "utf8")
     broadcast(msg, "")
-    run = True
-    while run:
-        try:
-            message = client.recv(BUFSIZ)
-            if message == bytes("{quit}", "utf8"):
-                client.close()
-                chat_users.remove(chat_user)
-                broadcast(bytes(f"{name} has left the chat...", "utf8"), "")
-                print(f"[DISCONNECTED] {name} disconnected")
-                break
-            else:
-                broadcast(message, name+": ")
-                print(f"{name}: ", message.decode("utf8"))
-        except Exception as e:
-            print(f"[Exception]", e)
-            run = False
+    print(msg.decode("utf8"))
+    while True:
+        message = client.recv(BUFSIZ)
+        if message == bytes("{quit}", "utf8"):
+            client.close()
+            chat_users.remove(chat_user)
+            broadcast(bytes(f"{name} has left the chat...", "utf8"), "")
+            print(f"[DISCONNECTED] {name} disconnected")
             break
+        else:
+            broadcast(message, name+": ")
+            print(f"{name}: ", message.decode("utf8"))
+
 
 
 def wait_for_connection():
@@ -69,8 +65,7 @@ def wait_for_connection():
     :param
     :return: none
     """
-    run = True
-    while run:
+    while True:
         try:
             client, address = SERVER.accept() # wait for any new connections
             chat_user = ChatUser(address, client) # create new chat user for connection
