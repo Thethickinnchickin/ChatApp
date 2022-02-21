@@ -89,6 +89,13 @@ def get_messages():
     update_messages()
     return jsonify({"messages": messages})
 
+@app.route("/get_name")
+def get_name():
+    try:
+        name = client.get_name()
+        return jsonify({"name": name})
+    except Exception as e:
+        print(e)
 
 def update_messages():
     """

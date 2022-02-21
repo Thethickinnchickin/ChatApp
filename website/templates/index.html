@@ -5,17 +5,55 @@
 
 
 
-<div class="input-group mb-3">
-  <input type="text" class="form-control" name="name" placeholder="Message" aria-label="Recipient's username" id="message">
-  <div class="input-group-append">
-    <button class="btn btn-outline-secondary" type="button" id="sendBtn">Button</button>
-  </div>
+<!--<div class="input-group mt-3 mb-3">-->
+<!--  <input type="text" class="form-control" name="name" placeholder="Message" aria-label="Recipient's username" id="message">-->
+<!--  <div class="input-group-append">-->
+<!--    <button class="btn btn-outline-secondary" type="button" id="sendBtn">Send</button>-->
+<!--  </div>-->
+<!--</div>-->
+
+<!--<div class="card" style="width: 18rem;">-->
+<!--  <ul id="messages" class="list-group list-group-flush">-->
+
+<!--  </ul>-->
+<!--</div>-->
+
+<div id="container">
+	<aside>
+		<header>
+			<input type="text" placeholder="search">
+		</header>
+		<ul>
+			<li>
+				<img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/chat_avatar_01.jpg" alt="">
+				<div>
+					<h2>Prénom Nom</h2>
+					<h3>
+						<span class="status orange"></span>
+						offline
+					</h3>
+				</div>
+			</li>
+		</ul>
+	</aside>
+	<main>
+		<header>
+			<div>
+				<h2>Join the group chat</h2>
+				<h3>Members Joined: </h3>
+			</div>
+			<img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/ico_star.png" alt="">
+		</header>
+		<ul id="chat">
+		</ul>
+		<footer>
+			<textarea type="text" class="form-control" name="name" placeholder="Message" aria-label="Recipient's username" id="message-area"></textarea>
+			<img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/ico_picture.png" alt="">
+			<img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/ico_file.png" alt="">
+			<a href="#" id="sendBtn">Send</a>
+		</footer>
+	</main>
 </div>
 
-<div class="card" style="width: 18rem;">
-  <ul id="messages" class="list-group list-group-flush">
-
-  </ul>
-</div>
 
 {% endblock %}

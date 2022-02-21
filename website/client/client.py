@@ -24,6 +24,7 @@ class Client:
         self.client_socket = socket(AF_INET, SOCK_STREAM)
         self.client_socket.connect(self.ADDR)
         self.messages = []
+        self.name = name
         self.send_message(name)
         self.lock = threading.Lock()
         receive_thread = Thread(target=self.receive_messages)
@@ -74,6 +75,12 @@ class Client:
         self.messages = []
         self.lock.release()
         return messages_copy
+
+    def get_name(self):
+        """
+        :returns: name of client
+        """
+        return self.name
 
     def disconnect(self):
         self.send_message("{quit}")
