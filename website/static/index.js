@@ -1,6 +1,6 @@
-    var dt = new Date();
-    var hours = ((dt.getHours() + 11) % 12 + 1);
-    var time = hours + ":" + dt.getMinutes()
+var dt = new Date();
+var hours = ((dt.getHours() + 11) % 12 + 1);
+var time = hours + ":" + dt.getMinutes()
 
 
 $(function() {
@@ -23,37 +23,59 @@ window.addEventListener("load", function(){
 });
 
 
-function update() {
-    var client_name = ''
+async function update() {
+    var client_name = await load_name();
     var message_content = ''
+    var user_content = ''
+    var users = await load_users();
 
 
-
-    fetch('/get_name')
-    .then(function (response) {
-        return response.json();
-    }).then(function (text) {
-        console.log(text.name)
-        client_name = text.name
-    })
 
     fetch('/get_messages')
     .then(function (response) {
         return response.json();
     }).then(function (text) {
-        console.log(text.messages)
-
-        console.log("Hello")
 
         for (let value of text["messages"]) {
-
-            message_content += '<li class="you"><div class="entete"><span class="status green"></span><h2>' + client_name + '</h2><h3> '+ time +'</h3></div><div class="triangle"></div><div class="message">' + value + '</div></li>'
+            if (value.name != client_name) {
+                message_content += '<li class="you"><div class="entete"><span class="status green"></span><h2>'+ value.name +'</h2><h3></h3></div><div class="triangle"></div><div class="message">' + value.message + '</div></li>'
+            } else {
+                message_content += '<li class="me"><div class="entete"><h3></h3><h2>'+ value.name +'</h2><span class="status blue"></span></div><div class="triangle"></div><div class="message">' + value.message + '</div></li>'
+            }
         }
-        document.getElementById("chat").innerHTML = message_content;
-    })
 
+        document.getElementById("chat").innerHTML = message_content;
+
+    })
+    for (let user of users) {
+        console.log(user)
+         user_content += '<h1>' + user + '</h1>'
+    }
+    document.getElementById("test").innerHTML = user_content;
     return false;
 }
+
+async function load_name() {
+  return await fetch("/get_name")
+    .then(async function (response) {
+      return await response.json();
+    })
+    .then(function (text) {
+      return text["name"];
+    });
+}
+
+async function load_users() {
+    return fetch("/get_users")
+        .then(async function (response) {
+            return await response.json();
+        })
+        .then(function (text) {
+            console.log(text)
+            return text[1]
+        })
+}
+
 
 
 function validate(name) {

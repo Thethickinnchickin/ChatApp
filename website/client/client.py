@@ -24,6 +24,7 @@ class Client:
         self.client_socket = socket(AF_INET, SOCK_STREAM)
         self.client_socket.connect(self.ADDR)
         self.messages = []
+        self.users = []
         self.name = name
         self.send_message(name)
         self.lock = threading.Lock()
@@ -37,9 +38,14 @@ class Client:
         """
         while True:
             try:
+
                 msg = self.client_socket.recv(self.BUFSIZ).decode()
+                name = self.client_socket.recv(self.BUFSIZ).decode()
+                message = {"message": msg, "name": name}
                 self.lock.acquire()
-                self.messages.append(msg)
+                self.messages.append(message)
+                if name not in self.users:
+                    self.users.append(name)
                 self.lock.release()
             except Exception as e:
                 print("[Exception]", e)
@@ -75,6 +81,21 @@ class Client:
         self.messages = []
         self.lock.release()
         return messages_copy
+
+    def get_users(self):
+        """
+        :returns a list of str messages
+        :return: list[str]
+        """
+        # make sure memory is safe to access
+
+        users_copy = self.users[:]
+
+        # make memory safe to read
+        self.lock.acquire()
+        self.users = []
+        self.lock.release()
+        return users_copy
 
     def get_name(self):
         """

@@ -16,7 +16,7 @@ SERVER = socket(AF_INET, SOCK_STREAM)
 SERVER.bind(ADDR)
 
 
-def broadcast(msg, name):
+def broadcast_message(msg):
     """
     Send new message to all clients
     :param msg: bytes["utf8"]
@@ -26,7 +26,22 @@ def broadcast(msg, name):
     for chat_user in chat_users:
         client = chat_user.client
         try:
-            client.send(bytes(name, "utf8") + msg)
+            client.send(msg)
+        except Exception as e:
+            print("[Exception]1", e)
+
+
+def broadcast_name(name):
+    """
+    Send new message to all clients
+    :param msg: bytes["utf8"]
+    :param name: str
+    :return:
+    """
+    for chat_user in chat_users:
+        client = chat_user.client
+        try:
+            client.send(bytes(name, "utf8"))
         except Exception as e:
             print("[Exception]", e)
 
@@ -43,20 +58,22 @@ def client_communication(chat_user):
     chat_user.set_name(name)
 
     msg = bytes(f"{name} has joined the chat", "utf8")
-    broadcast(msg, "")
+    broadcast_message(msg)
+    broadcast_name(name)
     print(msg.decode("utf8"))
     while True:
         message = client.recv(BUFSIZ)
         if message == bytes("{quit}", "utf8"):
             client.close()
-            broadcast(bytes(f"{name} has left the chat...", "utf8"), "")
+            broadcast_message(bytes(f"{name} has left the chat...", "utf8"), "")
+            broadcast_name(name)
             chat_users.remove(chat_user)
             print(f"[DISCONNECTED] {name} disconnected")
             break
         else:
-            broadcast(message, "")
+            broadcast_message(message)
+            broadcast_name(name)
             print(f"{name}: ", message.decode("utf8"))
-
 
 
 def wait_for_connection():
@@ -67,8 +84,8 @@ def wait_for_connection():
     """
     while True:
         try:
-            client, address = SERVER.accept() # wait for any new connections
-            chat_user = ChatUser(address, client) # create new chat user for connection
+            client, address = SERVER.accept()  # wait for any new connections
+            chat_user = ChatUser(address, client)  # create new chat user for connection
             chat_users.append(chat_user)
             print(f"[Connection] {address} connected to sever at {time.time()}")
             Thread(target=client_communication, args=(chat_user,)).start()

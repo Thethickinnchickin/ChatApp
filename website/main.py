@@ -4,8 +4,10 @@ import time
 from threading import Thread
 
 NAME_KEY = 'name'
+CURRENT_USER = ''
 client = None
 messages = []
+users = []
 
 app = Flask(__name__)
 app.secret_key = "helloyoucannotguessthesecret"
@@ -26,10 +28,15 @@ def login():
     """
     if request.method == "POST":
         global client
+        global users
+        global CURRENT_USER
 
         session[NAME_KEY] = request.form["name"]
+        CURRENT_USER = request.form["name"]
 
         client = Client(session[NAME_KEY])
+
+        users.append(CURRENT_USER)
 
         return redirect(url_for("home"))
 
@@ -43,8 +50,14 @@ def logout():
     :return None
     """
     global client
+    global users
+    global CURRENT_USER
 
+    users.remove(CURRENT_USER)
+    CURRENT_USER = ''
     client.disconnect()
+
+
 
     session.pop(NAME_KEY, None)
     return redirect(url_for("login"))
@@ -64,6 +77,7 @@ def home():
         return redirect(url_for("login"))
 
     client = Client(session[NAME_KEY])
+
 
     return render_template("index.html", **{"login": True, "session": session})
 
@@ -91,11 +105,31 @@ def get_messages():
 
 @app.route("/get_name")
 def get_name():
-    try:
-        name = client.get_name()
-        return jsonify({"name": name})
-    except Exception as e:
-        print(e)
+    data = {"name": ""}
+    if NAME_KEY in session:
+        data = {"name": session[NAME_KEY]}
+    return jsonify(data)
+
+@app.route("/get_users")
+def get_users():
+    return jsonify("users", users)
+
+def update_users(name):
+    """
+    updates local list of users
+    :return:
+    """
+    global users
+
+    run = True
+    while run:
+        time.sleep(0.1)  # update every 1/10 of a second
+        if not client: continue
+        new_user = name  # get any new messages from client
+        # display new messages
+        if new_user not in users:
+            users.append(new_user)
+    return users
 
 def update_messages():
     """
