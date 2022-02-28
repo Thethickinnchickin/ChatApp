@@ -37,6 +37,7 @@ async function update() {
     }).then(function (text) {
 
         for (let value of text["messages"]) {
+            console.log(value)
             if (value.name != client_name) {
                 message_content += '<li class="you"><div class="entete"><span class="status green"></span><h2>'+ value.name +'</h2><h3></h3></div><div class="triangle"></div><div class="message">' + value.message + '</div></li>'
             } else {
@@ -47,11 +48,16 @@ async function update() {
         document.getElementById("chat").innerHTML = message_content;
 
     })
+
+
+
+
+
     for (let user of users) {
         console.log(user)
-         user_content += '<h1>' + user + '</h1>'
+         user_content += '<li><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/chat_avatar_01.jpg" alt=""><div><h2>'+ user +'</h2><h3><span class="status orange"></span>online</h3></div></li>'
     }
-    document.getElementById("test").innerHTML = user_content;
+    document.getElementById("users-online").innerHTML = user_content;
     return false;
 }
 
