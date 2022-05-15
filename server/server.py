@@ -33,7 +33,7 @@ def broadcast_message(msg):
 
 def broadcast_name(name):
     """
-    Send new message to all clients with users name
+    Send new message to all clients 
     :param msg: bytes["utf8"]
     :param name: str
     :return:
