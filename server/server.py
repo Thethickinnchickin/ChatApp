@@ -33,7 +33,7 @@ def broadcast_message(msg):
 
 def broadcast_name(name):
     """
-    Send new message to all clients
+    Send new message to all clients with users name
     :param msg: bytes["utf8"]
     :param name: str
     :return:
@@ -48,7 +48,7 @@ def broadcast_name(name):
 
 def client_communication(chat_user):
     """
-    Thread to handle all messages from client
+    Thread to handle all messages from client 
     :param chat_user: ChatUser
     :return: None
     """
